@@ -73,6 +73,59 @@ Both ListView and DetailView use this TemplateResponseMixin to render the proper
 To restrict view access to only logged in users, Django has a LoginRequired mixin. Added this to the views to block anonymous users.
 Add $login_url = 'login' to the views to redirect it to the login page
 
+Ch15
+Added comments in line with articles
+Created Comment model that has a many to one foreign key relationship to Article.
+Traditionally the name of the foreign key
+field is simply the model it links to, so this field will be called article . The other two fields will be comment and author 
+#Update articles/models.py and migrate
+...
+class Comment(models.Model):
+	article = models.ForeignKey(Article, on_delete=models.CASCADE)
+	comment = models.CharField(max_length=140)
+	author = models.ForeignKey(
+		settings.AUTH_USER_MODEL,
+		on_delete=models.CASCADE,
+	)
+	def __str__(self):
+		return self.comment
+	def get_absolute_url(self):
+		return reverse('article_list')
+
+# articles/admin.py
+from django.contrib import admin
+from . import models
+class CommentInline(admin.TabularInline):
+	model = models.Comment
+class ArticleAdmin(admin.ModelAdmin):
+	inlines = [
+		CommentInline,
+	]
+admin.site.register(models.Article, ArticleAdmin)
+admin.site.register(models.Comment)
+
+To display all comments related to a specific article. This is a “query” as we’re asking the database for a specific bit of information. Since we are working with a foreign key, we want to follow a relationship backward: for each Article look up related Comment models.
+
+add a related_name attribute to our model which lets us explicitly set the name of this reverse relationship
+# Update articles/models.py and migrate to update the db model
+...
+class Comment(models.Model):
+	article = models.ForeignKey(
+		Article,
+		on_delete=models.CASCADE,
+		related_name='comments' # new
+	)
+
+To add to view:
+<div class="card-footer">
+	{% for comment in article.comments.all %}
+		<p>
+			<span class="font-weight-bold">{{ comment.author }} &middot;</span>
+			{{ comment }}
+		</p>
+	{% endfor %}
+</div>
+#To access each comment we’re calling article.comments.all which means first look at the article model, then comments which is the related name of the entire Comment model, and select all included.
 
 
 For reference
