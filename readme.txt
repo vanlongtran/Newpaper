@@ -53,4 +53,27 @@ EMAIL_USE_TLS = True
 Ch 13
 -Created a dedicated articles app with CRUD functionality.
 
+**I was able to finish chapter 14 and 15 lessons but then I went off and on my own and broken the app. After troubleshooting efforts, I resorted to rollbacking and redoing these two lessons.
+
+Here are the git options for rollbacking
+1) UNDO local file changes but NOT REMOVE your last commit
+git reset --hard
+
+2) UNDO local file changes AND REMOVE your last commit
+git reset --hard HEAD^
+
+3) KEEP local file changes and REMOVE ONLY your last commit
+git reset --soft HEAD^
+
 Ch14
+set permissions on edit/delete so that only the author of an article can make such changes. Edit the default CreateView and set the author via the form_valid method.
+
+Both ListView and DetailView use this TemplateResponseMixin to render the proper template so this mixin save from repeating code.
+
+To restrict view access to only logged in users, Django has a LoginRequired mixin. Added this to the views to block anonymous users.
+Add $login_url = 'login' to the views to redirect it to the login page
+
+
+
+For reference
+https://github.com/wsvincent/djangoforbeginners/blob/master/ch15-comments/templates/base.html
